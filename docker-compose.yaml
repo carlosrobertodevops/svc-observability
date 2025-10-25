@@ -9,8 +9,7 @@ services:
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
     volumes:
-      # monta a PASTA de configs (deve conter prometheus.yml)
-      - ./prometheus:/etc/prometheus:ro
+      - ./prometheus:/etc/prometheus:ro        # precisa conter prometheus.yml
       - prometheus_data:/prometheus
     expose:
       - "9090"
@@ -31,8 +30,8 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      # (opcional) se versionar dashboards JSON:
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      # (opcional) versionar dashboards:
+      # - ./grafana/dashboards:/var/lib/grafana/dashboards
     expose:
       - "3000"
     networks:
@@ -96,7 +95,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-      # monta a pasta (deve conter openmetrics.d/conf.yaml)
       - ./datadog/openmetrics.d:/etc/datadog-agent/conf.d/openmetrics.d:ro
     expose:
       - "8125/udp"
