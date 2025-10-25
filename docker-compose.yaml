@@ -1,4 +1,4 @@
-name: svc-observability
+#name: svc-observability
 
 networks:
   obs_net:
