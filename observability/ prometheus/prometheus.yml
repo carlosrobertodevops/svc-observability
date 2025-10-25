@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    env: production
+
+scrape_configs:
+  # O próprio Prometheus
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  # Métricas do host (CPU/RAM/Disk/FS)
+  - job_name: node-exporter
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # Métricas de containers Docker
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # === SUAS APPS AQUI (exemplos) ===
+  # Para cada microserviço que expõe /metrics, adicione um bloco:
+  - job_name: svc-face-recon
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["svc-face-recon:8080"] # ajuste a porta real
+        labels:
+          app: svc-face-recon
+
+  - job_name: svc-kg
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["svc-kg:8080"] # ajuste a porta real
+        labels:
+          app: svc-kg

@@ -1,0 +1,25 @@
+init_config:
+
+instances:
+  # Coleta do node-exporter
+  - openmetrics_endpoint: http://node-exporter:9100/metrics
+    namespace: node_exporter
+    metrics:
+      - "*"
+
+  # Coleta do cAdvisor
+  - openmetrics_endpoint: http://cadvisor:8080/metrics
+    namespace: cadvisor
+    metrics:
+      - "*"
+
+  # Suas apps (ajuste portas e paths)
+  - openmetrics_endpoint: http://svc-face-recon:8080/metrics
+    namespace: svc_face_recon
+    metrics:
+      - "*"
+
+  - openmetrics_endpoint: http://svc-kg:8080/metrics
+    namespace: svc_kg
+    metrics:
+      - "*"
