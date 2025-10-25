@@ -1,14 +1,5 @@
 #name: svc-observability
 
-networks:
-  obs_net:
-    name: obs_net
-    driver: bridge
-
-volumes:
-  prometheus_data: {}
-  grafana_data: {}
-
 services:
   prometheus:
     image: prom/prometheus:v2.55.0
@@ -108,3 +99,12 @@ services:
       - "4318" # OTLP HTTP
     networks:
       - obs_net
+
+networks:
+  obs_net:
+    name: obs_net
+    driver: bridge
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
