@@ -5,18 +5,8 @@
 - docker-compose.observability.yaml
 
 ```yaml
-version: "3.9"
 
 name: observability
-
-networks:
-  obs_net:
-    name: obs_net
-    driver: bridge
-
-volumes:
-  prometheus_data: {}
-  grafana_data: {}
 
 services:
   prometheus:
@@ -118,7 +108,17 @@ services:
     networks:
       - obs_net
 
+
+networks:
+  obs_net:
+    external: true
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
 ```
+
 Como expor Grafana no Coolify: crie um “Application → Docker Compose”, cole o YAML, e no mapeamento de porta use 3000 (porta interna). Depois, vincule um domínio no Coolify para o serviço grafana.
 
 ⸻
@@ -227,13 +227,15 @@ instances:
     metrics:
       - "*"
 ```
-Defina DD_API_KEY como Secret no Coolify. Se quiser enviar traces por OTLP, aponte seus serviços para http://datadog:4317 (gRPC) ou http://datadog:4318 (HTTP).
+
+Defina DD_API_KEY como Secret no Coolify. Se quiser enviar traces por OTLP, aponte seus serviços para <http://datadog:4317> (gRPC) ou <http://datadog:4318> (HTTP).
 
 ⸻
 
 5) Como plugar seus microserviços na observabilidade
 
 Em cada Compose de app (no Coolify), acrescente:
+
 ```yaml
 networks:
   obs_net:
@@ -245,21 +247,23 @@ services:
     networks:
       - obs_net
 ```
+
 Assim, prometheus e datadog (que estão na obs_net) conseguem resolver sua-app por DNS interno e coletar /metrics.
 
 ⸻
 
 6) Passo-a-passo rápido no Coolify
-	1.	New Application → Docker Compose → cole o docker-compose.observability.yaml.
-	2.	Crie os arquivos de config pelos Mounts ou pela aba de Editor (se usar Git, suba o repositório com essa estrutura).
-	3.	Em Environment/Secrets, defina:
-	•	GF_ADMIN_USER, GF_ADMIN_PASSWORD
-	•	DD_API_KEY (obrigatório), DD_SITE (se usar datadoghq.eu, por ex.)
-	4.	Deploy. Depois, abra o serviço grafana e vincule um domínio/porta 3000.
-	5.	Em cada microserviço, conecte à obs_net e adicione o job correspondente no prometheus.yml.
+
+ 1. New Application → Docker Compose → cole o docker-compose.observability.yaml.
+ 2. Crie os arquivos de config pelos Mounts ou pela aba de Editor (se usar Git, suba o repositório com essa estrutura).
+ 3. Em Environment/Secrets, defina:
+ • GF_ADMIN_USER, GF_ADMIN_PASSWORD
+ • DD_API_KEY (obrigatório), DD_SITE (se usar datadoghq.eu, por ex.)
+ 4. Deploy. Depois, abra o serviço grafana e vincule um domínio/porta 3000.
+ 5. Em cada microserviço, conecte à obs_net e adicione o job correspondente no prometheus.yml.
 
 Pronto! Você terá:
-	•	Grafana com dashboards em cima do Prometheus (host + containers + suas apps).
-	•	Datadog Agent enviando métricas/Logs/APM da VPS e containers para sua conta.
+ • Grafana com dashboards em cima do Prometheus (host + containers + suas apps).
+ • Datadog Agent enviando métricas/Logs/APM da VPS e containers para sua conta.
 
 Se quiser, eu já te envio um dashboard base do Grafana (JSON) com painéis para node_exporter + cAdvisor e exemplos de painéis para /metrics das suas APIs.

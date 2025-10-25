@@ -102,8 +102,7 @@ services:
 
 networks:
   obs_net:
-    name: obs_net
-    driver: bridge
+    external: true
 
 volumes:
   prometheus_data: {}
