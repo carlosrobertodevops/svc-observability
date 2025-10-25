@@ -23,8 +23,8 @@ services:
     container_name: grafana
     restart: unless-stopped
     user: "472" # evita permissões chatas em /var/lib/grafana
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD}
@@ -76,8 +76,8 @@ services:
     image: datadog/agent:7
     container_name: datadog
     restart: unless-stopped
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
     environment:
       DD_API_KEY: ${DD_API_KEY} # defina no Coolify como Secret
       DD_SITE: ${DD_SITE}
