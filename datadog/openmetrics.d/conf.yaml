@@ -23,3 +23,6 @@ instances:
     namespace: svc_kg
     metrics:
       - "*"
+
+  - host: redis # ou o nome/hostname certo
+    port: 6379

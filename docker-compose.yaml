@@ -8,7 +8,7 @@ services:
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
     volumes:
-      # - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     expose:
       - "9090"
@@ -69,25 +69,26 @@ services:
   datadog:
     image: datadog/agent:7
     restart: unless-stopped
+    pid: host
     env_file:
       - .env
     environment:
       DD_API_KEY: ${DD_API_KEY}
       DD_SITE: ${DD_SITE}
       DD_ENV: ${DD_ENV}
-      DD_SERVICE: observability
-      DD_VERSION: "1.0.0"
-      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
-      DD_LOGS_ENABLED: "true"
-      DD_PROCESS_CONFIG_ENABLED: "true"
+      DD_LOGS_ENABLED: "true" # corrigido
       DD_CONTAINER_COLLECT_ALL: "true"
-      DD_APM_ENABLED: "true"
-      DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT: "0.0.0.0:4317"
-      DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT: "0.0.0.0:4318"
+      DD_PROCESS_COLLECTION_ENABLED: "true"
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
+      # Opcional: evita coletar o próprio agente
+      # DD_AC_EXCLUDE: "name:datadog"
+      # Se for usar APM (8126), habilite:
+      # DD_APM_ENABLED: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - ./datadog/openmetrics.d:/etc/datadog-agent/conf.d/openmetrics.d:ro
     expose:
       - "8125/udp" # DogStatsD
