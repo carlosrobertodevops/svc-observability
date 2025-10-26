@@ -8,12 +8,10 @@ services:
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
     volumes:
-      # - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     expose:
       - "9090"
-    networks:
-      - obs_net
+    networks: [obs_net]
 
   grafana:
     image: grafana/grafana-oss:11.1.0
@@ -28,10 +26,11 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
     expose:
       - "3000"
-    networks:
-      - obs_net
+    networks: [obs_net]
 
   node-exporter:
     image: prom/node-exporter:v1.8.1
@@ -48,8 +47,7 @@ services:
       - /:/rootfs:ro
     expose:
       - "9100"
-    networks:
-      - obs_net
+    networks: [obs_net]
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
@@ -63,27 +61,23 @@ services:
       - /dev/disk/:/dev/disk:ro
     expose:
       - "8080"
-    networks:
-      - obs_net
+    networks: [obs_net]
 
   datadog:
     image: datadog/agent:7
     restart: unless-stopped
-    pid: host
     env_file:
       - .env
     environment:
-      DD_API_KEY: 0dcb015a2b84b4adb2047be94ba8ad68c5d59a70
-      DD_SITE: datadoghq.com
+      DD_API_KEY: ${DD_API_KEY}
+      DD_SITE: ${DD_SITE:-datadoghq.com}
       DD_ENV: ${DD_ENV}
-      DD_LOGS_ENABLED: "true" # corrigido
+      DD_LOGS_ENABLED: "true"
       DD_CONTAINER_COLLECT_ALL: "true"
       DD_PROCESS_COLLECTION_ENABLED: "true"
       DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
-      # Opcional: evita coletar o próprio agente
-      # DD_AC_EXCLUDE: "name:datadog"
-      # Se for usar APM (8126), habilite:
-      #  DD_APM_ENABLED: "true"
+      # opcional: desabilita DBM/Redis se não usar
+      DD_DBM_ENABLED: "false"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
@@ -95,8 +89,7 @@ services:
       - "8126" # APM
       - "4317" # OTLP gRPC
       - "4318" # OTLP HTTP
-    networks:
-      - obs_net
+    networks: [obs_net]
 
 networks:
   obs_net:
