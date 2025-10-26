@@ -75,19 +75,15 @@ services:
       DD_API_KEY: ${DD_API_KEY}
       DD_SITE: ${DD_SITE}
       DD_ENV: ${DD_ENV}
-      DD_SERVICE: observability
-      DD_VERSION: "1.0.0"
-      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
-      DD_LOGS_ENABLED: "true"
-      DD_PROCESS_CONFIG_ENABLED: "true"
-      DD_CONTAINER_COLLECT_ALL: "true"
-      DD_APM_ENABLED: "true"
-      DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT: "0.0.0.0:4317"
-      DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT: "0.0.0.0:4318"
+      DD_LOGS_ENABLED: rue
+      DD_CONTAINER_COLLECT_ALL: true
+      DD_PROCESS_COLLECTION_ENABLED: true
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - ./datadog/openmetrics.d:/etc/datadog-agent/conf.d/openmetrics.d:ro
     expose:
       - "8125/udp" # DogStatsD
