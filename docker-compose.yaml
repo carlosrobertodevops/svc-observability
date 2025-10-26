@@ -1,15 +1,14 @@
 services:
   prometheus:
     image: prom/prometheus:v2.55.0
-    container_name: prometheus
     restart: unless-stopped
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
+      - --config.file=/etc/prometheus/prometheus.yaml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
     volumes:
-      - ./prometheus:/etc/prometheus:ro        # precisa conter prometheus.yml
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus_data:/prometheus
     expose:
       - "9090"
@@ -18,9 +17,8 @@ services:
 
   grafana:
     image: grafana/grafana-oss:11.1.0
-    container_name: grafana
     restart: unless-stopped
-    user: "472"
+    user: "472" # evita problemas de permissão em /var/lib/grafana
     env_file:
       - .env
     environment:
@@ -30,8 +28,6 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      # (opcional) versionar dashboards:
-      # - ./grafana/dashboards:/var/lib/grafana/dashboards
     expose:
       - "3000"
     networks:
@@ -39,7 +35,6 @@ services:
 
   node-exporter:
     image: prom/node-exporter:v1.8.1
-    container_name: node-exporter
     restart: unless-stopped
     pid: host
     command:
@@ -58,7 +53,6 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
     restart: unless-stopped
     privileged: true
     volumes:
@@ -74,7 +68,6 @@ services:
 
   datadog:
     image: datadog/agent:7
-    container_name: datadog
     restart: unless-stopped
     env_file:
       - .env
@@ -97,10 +90,10 @@ services:
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
       - ./datadog/openmetrics.d:/etc/datadog-agent/conf.d/openmetrics.d:ro
     expose:
-      - "8125/udp"
-      - "8126"
-      - "4317"
-      - "4318"
+      - "8125/udp" # DogStatsD
+      - "8126"     # APM
+      - "4317"     # OTLP gRPC
+      - "4318"     # OTLP HTTP
     networks:
       - obs_net
 
