@@ -83,7 +83,7 @@ services:
       # Opcional: evita coletar o próprio agente
       # DD_AC_EXCLUDE: "name:datadog"
       # Se for usar APM (8126), habilite:
-      DD_APM_ENABLED: "true"
+      #  DD_APM_ENABLED: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
