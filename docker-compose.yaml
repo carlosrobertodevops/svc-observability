@@ -73,7 +73,7 @@ services:
     env_file:
       - .env
     environment:
-      DD_API_KEY: ${DD_API_KEY}
+      DD_API_KEY: 457374e8871c087d4948320e1e00bed
       DD_SITE: datadoghq.com
       DD_ENV: ${DD_ENV}
       DD_LOGS_ENABLED: "true" # corrigido
