@@ -74,7 +74,7 @@ services:
       - .env
     environment:
       DD_API_KEY: ${DD_API_KEY}
-      DD_SITE: ${DD_SITE}
+      DD_SITE: datadoghq.com
       DD_ENV: ${DD_ENV}
       DD_LOGS_ENABLED: "true" # corrigido
       DD_CONTAINER_COLLECT_ALL: "true"
