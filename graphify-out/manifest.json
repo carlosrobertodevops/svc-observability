@@ -1,0 +1,32 @@
+{
+  "README.md": {
+    "mtime": 1783348989.964342,
+    "ast_hash": "fe9c2fe2f777781fb182fbb15c9ccf5f",
+    "semantic_hash": ""
+  },
+  "datadog/openmetrics.d/conf.yaml": {
+    "mtime": 1783345568.0907829,
+    "ast_hash": "f174625c3d42dcc1dd15e958fca86378",
+    "semantic_hash": ""
+  },
+  "docker-compose.observability.yaml": {
+    "mtime": 1783349609.2620876,
+    "ast_hash": "0297015e6ef02c78500c89f4b75d2217",
+    "semantic_hash": ""
+  },
+  "docker-compose.yaml": {
+    "mtime": 1783349611.9072087,
+    "ast_hash": "18da9523215e4b176495c7f1311113c5",
+    "semantic_hash": ""
+  },
+  "grafana/provisioning/datasources/prometheus.yaml": {
+    "mtime": 1783345568.0912914,
+    "ast_hash": "3b6796c70f9b3a0a47aff1b04733bcc6",
+    "semantic_hash": ""
+  },
+  "prometheus/prometheus.yml": {
+    "mtime": 1783348950.5062172,
+    "ast_hash": "983160ba4d46e0925561e63d35db6325",
+    "semantic_hash": ""
+  }
+}

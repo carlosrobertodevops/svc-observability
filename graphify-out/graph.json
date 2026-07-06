@@ -1,0 +1,181 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme",
+      "community": 0,
+      "norm_label": "readme.md"
+    },
+    {
+      "label": "svc-observability",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "readme_svc_observability",
+      "community": 0,
+      "norm_label": "svc-observability"
+    },
+    {
+      "label": "1) docker-compose.observability.yaml",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "readme_1_docker_compose_observability_yaml",
+      "community": 0,
+      "norm_label": "1) docker-compose.observability.yaml"
+    },
+    {
+      "label": "2) prometheus/prometheus.yml",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L126",
+      "_origin": "ast",
+      "id": "readme_2_prometheus_prometheus_yml",
+      "community": 0,
+      "norm_label": "2) prometheus/prometheus.yml"
+    },
+    {
+      "label": "3) Provisionar o datasource do Grafana (auto)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L176",
+      "_origin": "ast",
+      "id": "readme_3_provisionar_o_datasource_do_grafana_auto",
+      "community": 0,
+      "norm_label": "3) provisionar o datasource do grafana (auto)"
+    },
+    {
+      "label": "4) Datadog: scraping dos mesmos endpoints (opcional, mas recomendado)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L199",
+      "_origin": "ast",
+      "id": "readme_4_datadog_scraping_dos_mesmos_endpoints_opcional_mas_recomendado",
+      "community": 0,
+      "norm_label": "4) datadog: scraping dos mesmos endpoints (opcional, mas recomendado)"
+    },
+    {
+      "label": "7) Integra\u00e7\u00e3o com mondaha",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L273",
+      "_origin": "ast",
+      "id": "readme_7_integra\u00e7\u00e3o_com_mondaha",
+      "community": 1,
+      "norm_label": "7) integracao com mondaha"
+    },
+    {
+      "label": "Bridge `obs_net`",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L277",
+      "_origin": "ast",
+      "id": "readme_bridge_obs_net",
+      "community": 1,
+      "norm_label": "bridge `obs_net`"
+    },
+    {
+      "label": "Jobs de scrape (mondaha)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L293",
+      "_origin": "ast",
+      "id": "readme_jobs_de_scrape_mondaha",
+      "community": 1,
+      "norm_label": "jobs de scrape (mondaha)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "readme",
+      "target": "readme_svc_observability",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "readme_svc_observability",
+      "target": "readme_1_docker_compose_observability_yaml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L126",
+      "weight": 1.0,
+      "source": "readme_svc_observability",
+      "target": "readme_2_prometheus_prometheus_yml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L176",
+      "weight": 1.0,
+      "source": "readme_svc_observability",
+      "target": "readme_3_provisionar_o_datasource_do_grafana_auto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L199",
+      "weight": 1.0,
+      "source": "readme_svc_observability",
+      "target": "readme_4_datadog_scraping_dos_mesmos_endpoints_opcional_mas_recomendado",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L273",
+      "weight": 1.0,
+      "source": "readme_svc_observability",
+      "target": "readme_7_integra\u00e7\u00e3o_com_mondaha",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L277",
+      "weight": 1.0,
+      "source": "readme_7_integra\u00e7\u00e3o_com_mondaha",
+      "target": "readme_bridge_obs_net",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "README.md",
+      "source_location": "L293",
+      "weight": 1.0,
+      "source": "readme_7_integra\u00e7\u00e3o_com_mondaha",
+      "target": "readme_jobs_de_scrape_mondaha",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "68ffdc94e36cee9f326d7872fa3006bab4487a70"
+}

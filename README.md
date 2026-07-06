@@ -217,7 +217,7 @@ instances:
       - "*"
 
   # Suas apps (ajuste portas e paths)
-  - openmetrics_endpoint: http://svc-face-recon:8080/metrics
+  - openmetrics_endpoint: http://svc-face-recon:8000/metrics
     namespace: svc_face_recon
     metrics:
       - "*"
