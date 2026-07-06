@@ -121,6 +121,8 @@ volumes:
 
 Como expor Grafana no Coolify: crie um “Application → Docker Compose”, cole o YAML, e no mapeamento de porta use 3000 (porta interna). Depois, vincule um domínio no Coolify para o serviço grafana.
 
+> **Compose canônico:** `docker-compose.observability.yaml` é o único a usar (`docker-compose.yaml` está **DEPRECATED**). Serviços via `expose` (não `ports`) → Grafana:3000/Prometheus:9090 acessíveis só na `obs_net`; exposição externa via reverse proxy/Coolify. O arquivo real ainda inclui os services **postgres_exporter** (9187) e **redis_exporter** (9121) que scrapeiam o Postgres/Redis do mondaha — ver `DOCKER.md` e `CLAUDE.md` para a lista completa e comandos.
+
 ⸻
 
 ## 2) prometheus/prometheus.yml
@@ -156,20 +158,22 @@ scrape_configs:
   - job_name: svc-face-recon
     metrics_path: /metrics
     static_configs:
-      - targets: ["svc-face-recon:8080"]   # ajuste a porta real
+      - targets: ["svc-face-recon:8000"]   # porta real 8000 (NÃO 8080)
         labels:
           app: svc-face-recon
 
   - job_name: svc-kg
     metrics_path: /metrics
     static_configs:
-      - targets: ["svc-kg:8080"]           # ajuste a porta real
+      - targets: ["svc-kg:8080"]           # svc-kg usa 8080
         labels:
           app: svc-kg
 
 ```
 
 Dica: para o Prometheus enxergar suas apps, elas precisam estar na mesma rede obs_net (veja o item 4 abaixo). Ajuste as portas/paths conforme cada serviço.
+
+> **Nota:** o `prometheus/prometheus.yml` real deste repo, além dos jobs acima, já scrapeia `mondaha-api` (`api:3001/metrics`), `postgres-exporter:9187` e `redis-exporter:9121` — ver a tabela completa de targets na seção 7. `svc-face-recon` escuta em **8000** (coerente com o Datadog em §4); apenas `svc-kg` usa 8080.
 
 ⸻
 
