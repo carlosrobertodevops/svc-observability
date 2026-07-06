@@ -267,3 +267,41 @@ Pronto! Você terá:
  • Datadog Agent enviando métricas/Logs/APM da VPS e containers para sua conta.
 
 Se quiser, eu já te envio um dashboard base do Grafana (JSON) com painéis para node_exporter + cAdvisor e exemplos de painéis para /metrics das suas APIs.
+
+⸻
+
+## 7) Integração com mondaha
+
+Este stack de observabilidade é acoplado ao monorepo **mondaha** (repo `mondaha`, branch `mondaha-fs`) através de uma **rede Docker externa compartilhada** chamada `obs_net`. Os dois stacks rodam em `docker-compose` separados e se enxergam por DNS interno graças a essa rede.
+
+### Bridge `obs_net`
+
+- Neste stack (`docker-compose.observability.yaml`) todos os services já declaram `networks: [obs_net]` e o bloco top-level `networks: obs_net: external: true`.
+- No stack do mondaha (`docker-compose.yml`), os services **postgres, redis, api, app, svc-kg, svc-face-recon** são anexados a `obs_net` (mantendo também a rede `default`). Assim o Prometheus/Datadog daqui resolvem esses containers por nome.
+- A rede precisa existir antes de subir qualquer stack:
+
+```bash
+docker network create obs_net
+# stack mondaha
+(cd ../mondaha && docker compose up -d)
+# stack observability
+docker compose -f docker-compose.observability.yaml up -d
+```
+
+Ambos precisam estar `up` — os exporters `postgres-exporter`/`redis-exporter` só alcançam `postgres:5432`/`redis:6379` porque o stack do mondaha os anexa a `obs_net`.
+
+### Jobs de scrape (mondaha)
+
+Configurados em `prometheus/prometheus.yml`:
+
+| Job | Target | Origem |
+|-----|--------|--------|
+| `mondaha-api` | `api:3001` `/metrics` | Elysia API (label `app=mondaha-api`) |
+| `svc-face-recon` | `svc-face-recon:8000` `/metrics` | serviço de reconhecimento facial (porta 8000) |
+| `svc-kg` | `svc-kg:8080` `/metrics` | knowledge graph |
+| `postgres-exporter` | `postgres-exporter:9187` | exporter do Postgres do mondaha |
+| `redis-exporter` | `redis-exporter:9121` | exporter do Redis do mondaha |
+
+Além destes, os jobs base `prometheus`, `node-exporter` (host) e `cadvisor` (todos os containers Docker, cobrindo o Next app do mondaha que não expõe `/metrics` próprio).
+
+> Documentação espelho no lado do mondaha: `docs/INFRA.md` §16 (Observabilidade).

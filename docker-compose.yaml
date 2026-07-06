@@ -1,3 +1,4 @@
+# DEPRECATED: stack canônico = docker-compose.observability.yaml. Este arquivo NÃO recebe exporters/mount e NÃO deve ser usado.
 services:
   prometheus:
     image: prom/prometheus:v2.55.0

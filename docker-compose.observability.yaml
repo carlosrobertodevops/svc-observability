@@ -8,7 +8,7 @@ services:
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
     volumes:
-      # - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     expose:
       - "9090"
@@ -75,7 +75,7 @@ services:
       DD_API_KEY: ${DD_API_KEY}
       DD_SITE: ${DD_SITE}
       DD_ENV: ${DD_ENV}
-      DD_LOGS_ENABLED: rue
+      DD_LOGS_ENABLED: true
       DD_CONTAINER_COLLECT_ALL: true
       DD_PROCESS_COLLECTION_ENABLED: true
       DD_DOGSTATSD_NON_LOCAL_TRAFFIC: true
@@ -90,6 +90,28 @@ services:
       - "8126" # APM
       - "4317" # OTLP gRPC
       - "4318" # OTLP HTTP
+    networks:
+      - obs_net
+
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://mondaha:mondaha@postgres:5432/mondaha?sslmode=disable"
+    expose:
+      - "9187"
+    networks:
+      - obs_net
+
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://redis:6379"
+    expose:
+      - "9121"
     networks:
       - obs_net
 
