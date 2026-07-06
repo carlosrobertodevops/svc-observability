@@ -111,7 +111,8 @@ services:
 
 networks:
   obs_net:
-    external: true
+    external: true      # só anexa; o mondaha é dono e cria a obs_net
+    name: obs_net
 
 volumes:
   prometheus_data: {}
@@ -276,23 +277,22 @@ Se quiser, eu já te envio um dashboard base do Grafana (JSON) com painéis para
 
 ## 7) Integração com mondaha
 
-Este stack de observabilidade é acoplado ao monorepo **mondaha** (repo `mondaha`, branch `mondaha-fs`) através de uma **rede Docker externa compartilhada** chamada `obs_net`. Os dois stacks rodam em `docker-compose` separados e se enxergam por DNS interno graças a essa rede.
+Este stack de observabilidade é acoplado ao monorepo **mondaha** (repo `mondaha`, branch `mondaha-fs`) através de uma **rede Docker compartilhada** chamada `obs_net`. Essa rede é **propriedade do stack do mondaha**, que a **cria automaticamente** ao subir; este stack apenas **se anexa** a ela. Os dois stacks rodam em `docker-compose` separados e se enxergam por DNS interno graças a essa rede.
 
 ### Bridge `obs_net`
 
-- Neste stack (`docker-compose.observability.yaml`) todos os services já declaram `networks: [obs_net]` e o bloco top-level `networks: obs_net: external: true`.
-- No stack do mondaha (`docker-compose.yml`), os services **postgres, redis, api, app, svc-kg, svc-face-recon** são anexados a `obs_net` (mantendo também a rede `default`). Assim o Prometheus/Datadog daqui resolvem esses containers por nome.
-- A rede precisa existir antes de subir qualquer stack:
+- No stack do mondaha (`docker-compose.yml`), a `obs_net` é declarada como **não-external** (`networks: obs_net: { name: obs_net }`), ou seja, o mondaha é **dono** dela e a **cria** no `docker compose up`. Os services **postgres, redis, api, app, svc-kg, svc-face-recon** são anexados a `obs_net` (mantendo também a rede `default`). Assim o Prometheus/Datadog daqui resolvem esses containers por nome.
+- Neste stack (`docker-compose.observability.yaml`) todos os services declaram `networks: [obs_net]` e o bloco top-level `networks: obs_net: { external: true, name: obs_net }` — ele **só se anexa**, não cria a rede.
+- Ordem: **suba o mondaha primeiro** (ele cria a `obs_net`), depois este stack:
 
 ```bash
-docker network create obs_net
-# stack mondaha
+# stack mondaha (cria a obs_net)
 (cd ../mondaha && docker compose up -d)
-# stack observability
+# stack observability (anexa à obs_net já criada)
 docker compose -f docker-compose.observability.yaml up -d
 ```
 
-Ambos precisam estar `up` — os exporters `postgres-exporter`/`redis-exporter` só alcançam `postgres:5432`/`redis:6379` porque o stack do mondaha os anexa a `obs_net`.
+Ambos precisam estar `up` — os exporters `postgres-exporter`/`redis-exporter` só alcançam `postgres:5432`/`redis:6379` porque o stack do mondaha os anexa a `obs_net`. Só é preciso `docker network create obs_net` se rodar **este** stack **sem** o mondaha (este é `external`-only e não cria a rede).
 
 ### Jobs de scrape (mondaha)
 

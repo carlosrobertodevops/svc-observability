@@ -5,8 +5,11 @@ documentação do mondaha; para a visão end-to-end ver `mondaha/docs/INFRA.md �
 
 ## Propósito
 
-Stack de observabilidade **acoplado ao monorepo mondaha** via **rede Docker externa
-compartilhada `obs_net`**. Coleta métricas de host, containers e microserviços do mondaha
+Stack de observabilidade **acoplado ao monorepo mondaha** via **rede Docker
+compartilhada `obs_net`**. Essa rede é **propriedade do stack do mondaha**, que a declara
+como não-external (`networks: obs_net: { name: obs_net }`) e a **cria automaticamente** no
+`docker compose up`. Este stack apenas **se anexa** a ela (`external: true, name: obs_net`),
+não a cria. Coleta métricas de host, containers e microserviços do mondaha
 (Prometheus + Datadog) e as visualiza no Grafana. Roda em `docker-compose` próprio,
 separado do stack do mondaha; os dois se enxergam por DNS interno graças à `obs_net`.
 
@@ -15,8 +18,8 @@ Branch de trabalho: **`svc-observability-fs`**.
 ## Compose canônico
 
 - ✅ **`docker-compose.observability.yaml`** — ÚNICO compose a usar. Todos os services em
-  `obs_net` (external) e portas via `expose` (não `ports`); acesso externo só via reverse
-  proxy (Coolify).
+  `obs_net` (`external: true, name: obs_net` — só anexa, não cria; o mondaha é dono) e
+  portas via `expose` (não `ports`); acesso externo só via reverse proxy (Coolify).
 - ⛔ `docker-compose.yaml` — **DEPRECATED** (header marcado). Não usar/editar.
 
 ## Stack e portas (todas via `expose`, sem publish direto)
@@ -49,10 +52,15 @@ Datadog espelha os mesmos endpoints em `datadog/openmetrics.d/conf.yaml`.
 
 ## Ordem de subida
 
-1. `docker network create obs_net` (a rede precisa existir antes de qualquer stack).
-2. Subir o **mondaha** (`cd ../mondaha && docker compose up -d`) — anexa
-   postgres/redis/api/app/svc-kg/svc-face-recon à `obs_net`.
-3. Subir **este stack** (`docker compose -f docker-compose.observability.yaml up -d`).
+1. Subir o **mondaha** primeiro (`cd ../mondaha && docker compose up -d`) — o mondaha
+   **é dono** da `obs_net` e a **cria automaticamente**, além de anexar
+   postgres/redis/api/app/svc-kg/svc-face-recon a ela.
+2. Subir **este stack** (`docker compose -f docker-compose.observability.yaml up -d`) —
+   apenas se **anexa** à `obs_net` já criada pelo mondaha.
+
+Não é preciso `docker network create obs_net` quando o mondaha sobe primeiro. Só se você
+rodar **este** stack **sem** o mondaha (que é `external`-only e não cria a rede) precisa
+criá-la antes: `docker network create obs_net`.
 
 Os exporters `postgres-exporter`/`redis-exporter` só alcançam `postgres:5432`/`redis:6379`
 porque o mondaha os anexa à `obs_net`; ambos os stacks precisam estar `up`.

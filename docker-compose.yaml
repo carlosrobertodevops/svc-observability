@@ -95,6 +95,7 @@ services:
 networks:
   obs_net:
     external: true
+    name: obs_net
 
 volumes:
   prometheus_data: {}

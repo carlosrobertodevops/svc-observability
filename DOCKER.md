@@ -9,10 +9,11 @@ Compose canônico: **`docker-compose.observability.yaml`** (o `docker-compose.ya
 ## Comandos
 
 ```bash
-# 1. criar a rede compartilhada (uma vez; falha silenciosa se já existir)
-docker network create obs_net
+# 1. subir o mondaha primeiro — ele é dono da obs_net e a cria automaticamente
+#    (cd ../mondaha && docker compose up -d)
+#    Só se rodar ESTE stack sem o mondaha: docker network create obs_net
 
-# 2. subir o stack de observabilidade
+# 2. subir o stack de observabilidade (só se anexa à obs_net já criada)
 docker compose -f docker-compose.observability.yaml up -d
 
 # logs (todos ou por serviço)
@@ -44,21 +45,25 @@ docker compose -f docker-compose.observability.yaml down -v
 Todas as portas são `expose` (visíveis só dentro da `obs_net`) — **não** há `ports:`
 publicando na VPS. Acesso externo é feito por reverse proxy (ver abaixo).
 
-## Rede `obs_net` (external)
+## Rede `obs_net` (só anexa; o mondaha é dono)
 
 ```yaml
 networks:
   obs_net:
     external: true
+    name: obs_net
 ```
 
-`obs_net` é uma **bridge cross-projeto**: existe fora de qualquer compose e é referenciada
-como `external: true` por ambos os stacks (este + mondaha). Serve para que containers de
-dois `docker compose` distintos compartilhem um mesmo domínio de DNS interno. Sem ela, o
-Prometheus/Datadog daqui não conseguiriam resolver os containers do mondaha.
+`obs_net` é uma **bridge cross-projeto** que permite que containers de dois `docker compose`
+distintos compartilhem um mesmo domínio de DNS interno. **O stack do mondaha é o dono**: seu
+`docker-compose.yml` declara a rede como não-external (`networks: obs_net: { name: obs_net }`)
+e a **cria automaticamente** no `docker compose up`. **Este** stack apenas **se anexa** a ela
+(`external: true, name: obs_net`) — não a cria. Sem ela, o Prometheus/Datadog daqui não
+conseguiriam resolver os containers do mondaha.
 
-Por isso a rede precisa ser criada **manualmente e antes** de subir os stacks:
-`docker network create obs_net`.
+Por isso, **suba o mondaha primeiro** (ele cria a `obs_net`) e depois este stack. Só é preciso
+`docker network create obs_net` se você rodar **este** stack **sem** o mondaha, já que ele é
+`external`-only e não pode criar a rede.
 
 ## Como o Prometheus scrapeia os serviços do mondaha
 
@@ -91,7 +96,9 @@ No Coolify: apontar o proxy do domínio para o container `grafana:3000` (ou `pro
 ## Troubleshooting
 
 - **`up` falha com "network obs_net declared as external, but could not be found"**: a rede
-  não existe. Rode `docker network create obs_net` antes de subir os stacks.
+  ainda não existe porque o mondaha (dono da `obs_net`) não subiu. Suba o mondaha primeiro
+  (`cd ../mondaha && docker compose up -d`); ou, ao rodar este stack sozinho, crie a rede à
+  mão: `docker network create obs_net`.
 - **`postgres-exporter`/`redis-exporter` sem dados / target DOWN**: o stack do mondaha não
   está `up` ou não foi anexado à `obs_net`. Subir o mondaha primeiro (ver ordem em `CLAUDE.md`).
 - **`svc-face-recon` target DOWN / sem métricas**: confirmar porta **8000** (não 8080) em
