@@ -47,8 +47,15 @@ Datadog espelha os mesmos endpoints em `datadog/openmetrics.d/conf.yaml`.
 
 ## Env vars (`.env`, ver `.env.example`)
 
-- Grafana: `GF_ADMIN_USER`, `GF_ADMIN_PASSWORD`
-- Datadog: `DD_API_KEY` (obrigatório), `DD_SITE=datadoghq.com`, `DD_ENV=production`
+Ambos os composes têm `env_file: .env` e interpolam `${VAR}` → **o `.env` é obrigatório
+existir** (não é commitado; `.gitignore`). Sem ele o Grafana cai no default `admin/changeme`
+(via `${GF_ADMIN_PASSWORD:-changeme}`) e o Datadog sobe sem chave. Copiar de `.env.example`.
+
+- Grafana: `GF_ADMIN_USER`, `GF_ADMIN_PASSWORD` (trocar o placeholder antes de expor).
+- Datadog (opcional — Prometheus+Grafana é o stack primário): `DD_API_KEY`,
+  `DD_SITE=datadoghq.com` (usar `datadoghq.eu` p/ conta EU), `DD_ENV=production`.
+  ⚠️ `DD_API_KEY` **vazio → container `datadog` em restart-loop**; preencher com a chave real
+  ou comentar o service `datadog` no compose se não for usar.
 
 ## Ordem de subida
 
